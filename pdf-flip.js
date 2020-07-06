@@ -5,7 +5,8 @@
     currentScale: 1,
     layout: 'double',
     maxScale: 2,
-    audioSrc: "sound/page-flip.mp3",
+    flip: new Audio("sound/page-flip.mp3"), //audioSrc: "sound/page-flip.mp3",
+    audio: new Audio(),
     init: function () {
 
         $(window).bind('keydown', function (e) {
@@ -20,7 +21,6 @@
             }
         });
 
-
         $(document).on('click','#firstPage',function(){
             $("#magazine").turn('page', 1);
         });
@@ -28,7 +28,6 @@
         $(document).on('click','#lastPage',function(){
             $("#magazine").turn('page', PDFViewerApplication.pagesCount);
         });
-
 
         $(document).on('click','#thumbnailView a',function(){
           $('.toolbar .pageNumber').trigger('change');
@@ -70,7 +69,6 @@
 
         PdfFlip.currentPage = PDFViewerApplication.page;
 
-
         var pages = [1];
 
         PdfFlip.loadTurnJsPages(pages, $('#magazine'), true, true).then(function () {
@@ -98,16 +96,15 @@
 
                             event.preventDefault();
                         }
-                        PdfFlip.startTurnSound();
+                        PdfFlip.startTurnSound(page);
                         PdfFlip.currentPage = page;
                         PDFViewerApplication.page = page;
                     },
-                    turned: function(event, page, view){
-
+                    turned: function(event, page, view) {
+                        
                     }
                 }
             });
-
 
             setTimeout(function () {
                 $("#magazine").turn("display", PdfFlip.layout);
@@ -243,11 +240,25 @@
     calculateTotalPages: function () {
         return $('#viewer .page').length;
     },
-    startTurnSound: function () {
-        var audio = new Audio(PdfFlip.audioSrc);
-        audio.play();
-    },
+    startTurnSound: function (page) {
+        PdfFlip.audio.pause();
+        PdfFlip.flip.pause();
+        PdfFlip.flip.currentTime = 0.0;
+        PdfFlip.flip.play();
 
+        if (page == 2 || page == 3) {
+            PdfFlip.audio = new Audio("sound/p3.mp3");
+            PdfFlip.audio.play();
+        }
+        else if (page == 12 || page == 13) {
+            PdfFlip.audio = new Audio("sound/p13.mp3");
+            PdfFlip.audio.play();
+        }
+        else if (page == 30 || page == 31) {
+            PdfFlip.audio = new Audio("sound/p31.mp3");
+            PdfFlip.audio.play();
+        }
+    },
     loadTurnJsPages: function (pages, magazine, isInit, defer, scale) {
         var deferred = null;
 
